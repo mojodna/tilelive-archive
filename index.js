@@ -60,11 +60,10 @@ module.exports = function(tilelive, options) {
         obj.x = coords.shift() | 0;
         obj.y = coords.shift() | 0;
 
-        readStream.push(obj);
+        readStream.write(obj);
       })
       .on("end", function() {
-        // mark the readable stream as finished
-        readStream.push(null);
+        readStream.end();
       });
 
     return readStream;
