@@ -45,8 +45,10 @@ module.exports = function(tilelive, options) {
       source = source.pipe(zlib.createGunzip());
     }
 
+    var parser = tar.Parse();
+
     source
-      .pipe(tar.Parse())
+      .pipe(parser)
       .on("entry", function(entry) {
         var coords = entry.props.path.split(".")[0].split("/");
 
@@ -60,7 +62,10 @@ module.exports = function(tilelive, options) {
         obj.x = coords.shift() | 0;
         obj.y = coords.shift() | 0;
 
-        readStream.write(obj);
+        parser.pause();
+        readStream.write(obj, function() {
+          parser.resume();
+        });
       })
       .on("end", function() {
         readStream.end();
